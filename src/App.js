@@ -1,24 +1,26 @@
 import logo from './logo.svg';
 import './App.css';
+import {BrowserRouter,Route,Routes,Link} from 'react-router-dom'
+import { useState } from 'react';
+import SignUp from './components/signup';
+import SignIn from './components/signin';
+import Home from './components/home';
 
 function App() {
+  const [Email,setEmail] = useState("user@mail.com");
+  const [name,setName] = useState("User")
+  const CallBack = (res) =>{
+    setEmail(res.email);
+    setName(res.name)
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<SignUp/>}/>
+        <Route path="/signIn" element={<SignIn parentCallBack={CallBack}/>}/>
+        <Route path="/home" element={<Home email={Email} name={name}/>}/>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
