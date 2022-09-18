@@ -5,18 +5,45 @@ import Typography from '@mui/material/Typography';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import { FormControl } from '@mui/material';
+import Axios from 'axios';
+import img from './bmiq.jpg'
 export default function Home(props){
     const [gender,setGender] = useState("Male");
     const [height,setHeight] = useState(0);
     const [weight,setWeight] = useState(0);
     const [age,setAge] = useState(0);
-    const [bmi, setBmi] = useState(0)
+    const [bmi, setBmi] = useState()
     const [Status, setStatus] = useState();
+    const [resGender,setResGender] = useState("")
+    const [resHeight,setResHeight] = useState("")
+    const [resWeight,setResWeight] = useState("");
+    const [resAge,setResAge] = useState("")
+    const [resBmi,setResBmi] = useState("")
+    const [resEmail,setResEmail] = useState("")
+
     const handleChange = (event) =>{
         setGender(event.target.value)
     }
+    useEffect(()=>{
+        Axios({
+            method : 'get',
+            url : 'http://localhost:3001/getData',
+            params : {
+                email : props.email,
+            }
+        })
+        .then((response)=>{
+            console.log(response.data[0])
+            setResGender(response.data[0].gender)
+            setResHeight(response.data[0].height)
+            setResWeight(response.data[0].weight)
+            setResAge(response.data[0].age)
+            setResBmi(response.data[0].bmi)
+            setResEmail(response.data[0].email)
+        })
+    },[bmi])
     const handleSubmit = (event) =>{
         let bmi1 = weight/(height*height);
         let bmii= parseFloat(bmi1).toFixed(2);
@@ -39,7 +66,22 @@ export default function Home(props){
                 setStatus('Extreme Obesity')
             }
         }
+         Axios({
+            method : 'get',
+            url : 'http://localhost:3001/sendData',
+            params : {
+                email : props.email,
+                height : height,
+                weight : weight,
+                age : age,
+                gender : gender,
+                bmi :bmii
+            }
+        })
+        .then((response)=>{
+           alert(response.data.message)
 
+        })
     }
     return(
         <>
@@ -52,10 +94,12 @@ export default function Home(props){
         component="form" 
         sx={{
             width:'30%',
-            m:5,
+            mt:7,
+            ml:10,
             p:2,
             display:'flex',
-            flexDirection:'column'
+            flexDirection:'column',
+            boxShadow:3
         }}
         display="flex"
         flexDirection="column"
@@ -88,6 +132,32 @@ export default function Home(props){
                 <h2>{Status}</h2>
             
         </Box>
+        <Box sx={{ml:70,boxShadow:3,width:'30%',mt:7}}>
+            <Typography component="h1" variant="h3" display="flex" justifyContent="center" alignItems="center" sx={{mb:3,mt:3}}>
+              Past BMI
+            </Typography>
+            <Box display="flex" justifyContent="center" alignItems="center">
+                <div display="flex"
+        flexDirection="column">
+            <h2>Email : {resEmail}</h2>
+            <h2>Height : {resHeight}</h2>
+            <h2>Weight : {resWeight}</h2>
+            <h2>Height : {resHeight}</h2>
+            <h2>Age : {resAge}</h2>
+            <h2>Height : {resHeight}</h2>
+            <h2>Gender : {resGender}</h2>
+            <h2>BMI : {resBmi}</h2>
+            </div>
+            </Box>
+        </Box>
+        </div>
+        <div style={{marginTop:'11vh'}}>
+            <img src={img} style={{width:'100%',height:"70%"}}/>
+        </div>
+        <div>
+            <Box>
+
+            </Box>
         </div>
         {/* <h1>{props.email}</h1> */}
         {/* <h1>{props.name}</h1> */}
